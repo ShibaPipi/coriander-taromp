@@ -1,0 +1,13 @@
+{
+    "miniprogramRoot": "./",
+    "projectname": "coriander-taromp",
+    "description": "Cuisine is often delicious, when coriander flavors are strong.",
+    "appid": "touristappid",
+    "setting": {
+        "urlCheck": true,
+        "es6": false,
+        "postcss": false,
+        "minified": false
+    },
+    "compileType": "miniprogram"
+}

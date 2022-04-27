@@ -1,0 +1,23 @@
+{
+    "miniprogramRoot": "dist/",
+    "projectname": "coriander-taromp",
+    "description": "Cuisine is often delicious, when coriander flavors are strong.",
+    "appid": "wx271b6178e48e105a",
+    "setting": {
+        "urlCheck": true,
+        "es6": false,
+        "postcss": false,
+        "preloadBackgroundData": false,
+        "minified": false,
+        "newFeature": true,
+        "autoAudits": false,
+        "coverView": true,
+        "showShadowRootInWxmlPanel": false,
+        "scopeDataCheck": false,
+        "useCompilerModule": false
+    },
+    "compileType": "miniprogram",
+    "simulatorType": "wechat",
+    "simulatorPluginLibVersion": {},
+    "condition": {}
+}
