@@ -1,51 +1,48 @@
 import React, { useCallback } from 'react'
-import { View, Text, Button, Image } from '@tarojs/components'
-import { useEnv, useNavigationBar, useModal, useToast } from 'taro-hooks'
-import logo from './hook.png'
+import { useUserInfo } from 'taro-hooks'
 
-import './me.css'
+import { View } from '@tarojs/components'
+import { Avatar, Cell, Flex } from '@taroify/core'
+import { PageWrapper } from '@/components'
 
-const Index = () => {
-    const env = useEnv()
-    const [_, { setTitle }] = useNavigationBar({ title: 'Taro Hooks' })
-    const [show] = useModal({
-        title: 'Taro Hooks!',
-        showCancel: false,
-        confirmColor: '#8c2de9',
-        confirmText: '支持一下',
-        mask: true
-    })
-    const [showToast] = useToast({ mask: true })
+import './index.css'
 
-    const handleModal = useCallback(() => {
-        show({ content: '不如给一个star⭐️!' }).then(() => {
-            showToast({ title: '点击了支持!' })
-        })
-    }, [show, showToast])
+export default () => {
+    const [userInfo, { getUserProfile }] = useUserInfo()
+    console.log(userInfo)
+
+    const handleGetUserInfo = useCallback(() => {
+        if (userInfo) return
+        getUserProfile({ desc: '用于完善信息，展示昵称、头像' })
+    }, [getUserProfile, userInfo])
 
     return (
-        <View className="wrapper">
-            <Image className="logo" src={logo} />
-            <Text className="title">为Taro而设计的Hooks Library</Text>
-            <Text className="desc">
-                目前覆盖70%官方API. 抹平部分API在H5端短板. 提供近40+Hooks!
-                并结合ahook适配Taro!
-            </Text>
-            <View className="list">
-                <Text className="label">运行环境</Text>
-                <Text className="note">{env}</Text>
-            </View>
-            <Button
-                className="button"
-                onClick={() => setTitle('Taro Hooks Nice!')}
-            >
-                设置标题
-            </Button>
-            <Button className="button" onClick={handleModal}>
-                使用Modal
-            </Button>
-        </View>
+        <PageWrapper hasTabbar>
+            <Cell.Group bordered={false} inset>
+                <Flex justify="start" align="end" gutter={16}>
+                    <Flex.Item span={4} className="avatarSize">
+                        <Avatar
+                            shape="rounded"
+                            src={userInfo?.avatarUrl}
+                            alt="U"
+                            onClick={handleGetUserInfo}
+                        >
+                            U
+                        </Avatar>
+                    </Flex.Item>
+                    <Flex.Item span={20}>
+                        <View
+                            style={{ fontSize: 14 }}
+                            onClick={handleGetUserInfo}
+                        >
+                            {userInfo?.nickName || '请登录'}
+                        </View>
+                        <View style={{ fontSize: 12 }}>
+                            莫笑农家腊酒浑，丰年留客足鸡豚。
+                        </View>
+                    </Flex.Item>
+                </Flex>
+            </Cell.Group>
+        </PageWrapper>
     )
 }
-
-export default Index

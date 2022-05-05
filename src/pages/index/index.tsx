@@ -7,15 +7,16 @@ import {
     Checkbox,
     Empty,
     Field,
+    FixedView,
     Flex,
-    Input,
     Popup,
     SwipeCell,
     Tabs,
-    Tag
+    Tag,
+    Textarea
 } from '@taroify/core'
-import { DesktopOutlined, TodoListOutlined } from '@taroify/icons'
-import { PageWrapper } from '../../components'
+import { ShopCollectOutlined, ShopOutlined } from '@taroify/icons'
+import { PageWrapper, TabPaneTitle } from '@/components'
 
 import './index.css'
 
@@ -31,8 +32,8 @@ interface FoodItem {
 
 export default () => {
     const [inputVal, setInputVal] = useState<string>('')
+    const [activeTabPane, setActiveTabPane] = useState<'todo' | 'food'>('todo')
     const [todoList, setTodoList] = useState<TodoItem[]>([])
-
     const [foodList, setFoodList] = useState<FoodItem[]>([])
 
     const [popupVisible, setPopupVisible] = useState<boolean>(false)
@@ -50,13 +51,26 @@ export default () => {
     const handleAddItem = useCallback(() => {
         if (!inputVal) return
 
-        setTodoList(prevList => [
-            ...prevList,
-            { text: inputVal, isComplete: false }
-        ])
+        switch (activeTabPane) {
+            case 'todo':
+                setTodoList(prevList => [
+                    ...prevList,
+                    { text: inputVal, isComplete: false }
+                ])
+                break
+            case 'food':
+                setFoodList(prevList => [
+                    ...prevList,
+                    { text: inputVal, hasEaten: false }
+                ])
+                break
+            default:
+                return
+        }
+
         setInputVal('')
         setPopupVisible(false)
-    }, [inputVal])
+    }, [activeTabPane, inputVal])
 
     const handleDeleteTodoItem = useCallback(
         (index: number) => setTodoList(prevList => remove(index, 1, prevList)),
@@ -159,14 +173,15 @@ export default () => {
     )
 
     return (
-        <PageWrapper>
-            <Tabs sticky>
+        <PageWrapper hasTabbar>
+            <Tabs sticky value={activeTabPane} onChange={setActiveTabPane}>
                 <Tabs.TabPane
+                    value="todo"
                     title={
-                        <>
-                            <TodoListOutlined style={{ marginRight: 4 }} />
-                            食材清单
-                        </>
+                        <TabPaneTitle
+                            title="食材清单"
+                            icon={<ShopOutlined />}
+                        />
                     }
                 >
                     <Cell.Group clickable inset bordered={false}>
@@ -224,9 +239,7 @@ export default () => {
                                     <Flex justify="end" align="center">
                                         <Checkbox
                                             checked={isAllTodoItemChecked}
-                                            onChange={checked =>
-                                                toggleSelectAllTodoItem(checked)
-                                            }
+                                            onChange={toggleSelectAllTodoItem}
                                         />
                                     </Flex>
                                 </Cell>
@@ -242,7 +255,6 @@ export default () => {
                                 </Empty.Description>
                             </Empty>
                         )}
-                        {/* <FixedView position="bottom" safeArea="bottom"> */}
                         <Button.Group block variant="contained" shape="round">
                             <Button
                                 color="info"
@@ -257,41 +269,14 @@ export default () => {
                             )}
                         </Button.Group>
                     </Cell.Group>
-                    <Popup
-                        open={popupVisible}
-                        onClose={() => setPopupVisible(false)}
-                        rounded
-                        placement="bottom"
-                        style={{ height: '30%' }}
-                    >
-                        <Popup.Close />
-                        <Cell.Group inset style={{ marginTop: '64px' }}>
-                            <Field align="start" label="食材">
-                                <Input
-                                    value={inputVal}
-                                    placeholder="请输入要购买的食材"
-                                    onChange={({ detail: { value } }) =>
-                                        setInputVal(value as string)
-                                    }
-                                />
-                            </Field>
-                            <Button
-                                block
-                                color="primary"
-                                shape="round"
-                                onClick={handleAddItem}
-                            >
-                                加入清单
-                            </Button>
-                        </Cell.Group>
-                    </Popup>
                 </Tabs.TabPane>
                 <Tabs.TabPane
+                    value="food"
                     title={
-                        <>
-                            <DesktopOutlined style={{ marginRight: 4 }} />
-                            冰箱
-                        </>
+                        <TabPaneTitle
+                            title="冰箱"
+                            icon={<ShopCollectOutlined />}
+                        />
                     }
                 >
                     <Cell.Group inset>
@@ -347,9 +332,7 @@ export default () => {
                                     <Flex justify="end" align="center">
                                         <Checkbox
                                             checked={isAllFoodItemChecked}
-                                            onChange={checked =>
-                                                toggleSelectAllFoodItem(checked)
-                                            }
+                                            onChange={toggleSelectAllFoodItem}
                                         />
                                     </Flex>
                                 </Cell>
@@ -365,18 +348,62 @@ export default () => {
                                 </Empty.Description>
                             </Empty>
                         )}
-                        <Button
-                            block
-                            color="success"
-                            shape="round"
-                            onClick={handleDoneEating}
-                        >
-                            吃完了
-                        </Button>
+                        <Button.Group block variant="contained" shape="round">
+                            <Button
+                                color="info"
+                                onClick={() => setPopupVisible(true)}
+                            >
+                                添加食材
+                            </Button>
+                            {foodList.length > 0 && (
+                                <Button
+                                    block
+                                    color="success"
+                                    shape="round"
+                                    onClick={handleDoneEating}
+                                >
+                                    吃完了
+                                </Button>
+                            )}
+                        </Button.Group>
                     </Cell.Group>
                 </Tabs.TabPane>
             </Tabs>
-            {/* </FixedView> */}
+            <Popup
+                open={popupVisible}
+                onClose={() => setPopupVisible(false)}
+                rounded
+                placement="bottom"
+                style={{ height: '40%' }}
+            >
+                <Popup.Close />
+                <Cell.Group inset style={{ marginTop: '64px' }}>
+                    <Field align="start" label="食材">
+                        <Textarea
+                            autoHeight
+                            limit={50}
+                            style={{ height: 48 }}
+                            value={inputVal}
+                            placeholder="请输入食材名"
+                            onChange={({ detail: { value } }) =>
+                                setInputVal(value as string)
+                            }
+                        />
+                    </Field>
+                </Cell.Group>
+                <FixedView position="bottom" safeArea="bottom">
+                    <Cell.Group inset>
+                        <Button
+                            block
+                            color="info"
+                            shape="round"
+                            onClick={handleAddItem}
+                        >
+                            加入清单
+                        </Button>
+                    </Cell.Group>
+                </FixedView>
+            </Popup>
         </PageWrapper>
     )
 }

@@ -58,7 +58,9 @@ const config = {
         esnextModules: ['@taroify']
     },
     alias: {
-        '@components': path.resolve(__dirname, '..', 'src/components')
+        '@/api': path.resolve(__dirname, '..', 'src/api'),
+        '@/components': path.resolve(__dirname, '..', 'src/components'),
+        '@/data': path.resolve(__dirname, '..', 'src/data')
     }
 }
 

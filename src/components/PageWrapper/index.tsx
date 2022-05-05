@@ -1,9 +1,26 @@
-import React from 'react'
+import React, { FC, PropsWithChildren } from 'react'
 
 import { View } from '@tarojs/components'
+import { CustomTabbar } from '../CustomTabbar'
 
-import './index.css'
+interface PageWrapperProps {
+    hasTabbar?: boolean
+}
 
-export const PageWrapper = ({ children }) => {
-    return <View className="pageWrapper">{children}</View>
+export const PageWrapper: FC<PropsWithChildren<PageWrapperProps>> = ({
+    hasTabbar = false,
+    children
+}) => {
+    return (
+        <View style={{ height: '100vh' }}>
+            <View style={{ height: hasTabbar ? 'calc(100% - 84px)' : '100%' }}>
+                {children}
+            </View>
+            {hasTabbar && (
+                <View>
+                    <CustomTabbar />
+                </View>
+            )}
+        </View>
+    )
 }
